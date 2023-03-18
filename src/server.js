@@ -16,7 +16,7 @@ app.use(express.json());
  * #########################
  */
 
-const { newUser } = require('./controllers/users');
+const { newUser, validateUser, loginUser } = require('./controllers/users');
 
 /**
  * #######################
@@ -24,7 +24,14 @@ const { newUser } = require('./controllers/users');
  * #######################
  */
 
+// Registro usuario
 app.post('/register', newUser);
+
+// Validar registro
+app.post('/register/:registrationCode', validateUser);
+
+// Login usuario
+app.post('/login', loginUser);
 
 /*
   #####################################

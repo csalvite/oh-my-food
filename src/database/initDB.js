@@ -6,6 +6,10 @@ async function initDB() {
   try {
     connection = await getDB();
 
+    await connection.query('CREATE DATABASE IF NOT EXISTS OhMyFood');
+
+    await connection.query('USE OhMyFood');
+
     await connection.query('SET FOREIGN_KEY_CHECKS = 1');
 
     console.log('Eliminando tablas...');

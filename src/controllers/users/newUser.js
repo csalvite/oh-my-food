@@ -2,6 +2,7 @@ const getDB = require('../../database/getDB');
 const bcrypt = require('bcrypt');
 const { generateRandomString } = require('../../utils/generateRandomString');
 const { verifyEmail } = require('../../utils/emails/verifyMail');
+const generateError = require('../../utils/generateError');
 const saltRounds = 10;
 
 const newUser = async (req, res, next) => {
@@ -11,13 +12,11 @@ const newUser = async (req, res, next) => {
     connection = await getDB();
 
     // Obtenemos los campos necesarios del body.
-    const { name, lastname, email, password, phone } = req.body;
+    const { name, lastname, email, password, phone, lat, lon } = req.body;
 
     // Comprobamos que inserta todos los datos
     if (!(name && lastname && email && password)) {
-      const error = new Error('Debes insertar todos los datos obligatorios');
-      error.httpStatus = 403;
-      throw error;
+      throw generateError('Debes insertar todos los datos obligatorios', 403);
     }
 
     // Comprobamos si el email existe en la base de datos.
@@ -28,9 +27,7 @@ const newUser = async (req, res, next) => {
 
     // Si el email ya existe lanzamos un error.
     if (user.length > 0) {
-      const error = new Error('Ya existe un usuario con ese email');
-      error.httpStatus = 409;
-      throw error;
+      throw generateError('Ya existe un usuario con ese email', 409);
     }
 
     // Creamos un código de registro de un solo uso.
@@ -41,8 +38,9 @@ const newUser = async (req, res, next) => {
 
     // Guardamos el usuario en la base de datos.
     await connection.query(
-      `INSERT INTO Users (name, lastname, email, password, phone, registrationCode) VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, lastname, email, hashedPassword, phone, registrationCode]
+      `INSERT INTO Users (name, lastname, email, password, phone, registrationCode, lat, lon) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, lastname, email, hashedPassword, phone, registrationCode, lat, lon]
     );
 
     // Enviamos un mensaje de verificación al email del usuario.
