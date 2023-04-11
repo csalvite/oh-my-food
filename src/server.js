@@ -11,12 +11,25 @@ app.use(morgan('dev')); // Desserializa body en formato raw
 app.use(express.json());
 
 /**
+ * ###################
+ * ### Middlewares ###
+ * ###################
+ */
+
+/**
  * #########################
  * ### Users Controllers ###
  * #########################
  */
 
-const { newUser, validateUser, loginUser } = require('./controllers/users');
+const {
+  newUser,
+  validateUser,
+  loginUser,
+  updateUserLocation,
+  userAddress,
+} = require('./controllers/users');
+const isAuth = require('./middlewares/isAuth');
 
 /**
  * #######################
@@ -30,8 +43,14 @@ app.post('/register', newUser);
 // Validar registro
 app.post('/register/:registrationCode', validateUser);
 
+// Completar registro
+app.post('/user/address', isAuth, userAddress);
+
 // Login usuario
 app.post('/login', loginUser);
+
+// Actualizar ubicacion del usuario (lat, lon)
+app.put('/user/location', isAuth, updateUserLocation);
 
 /*
   #####################################

@@ -33,7 +33,7 @@ const isAuth = async (req, res, next) => {
 
     // Seleccionamos el usuario con el id que viene del token.
     const [user] = await connection.query(
-      `SELECT active FROM User WHERE id = ?`,
+      `SELECT active FROM Users WHERE id = ?`,
       [tokenInfo.id]
     );
 
